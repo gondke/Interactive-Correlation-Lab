@@ -67,11 +67,40 @@ if not edited_df.equals(df_current):
     st.rerun()
 
 
-# --- MAIN CONTENT: Plots & Analysis ---
+# --- MAIN CONTENT: Metrics & Analysis ---
 x_vals = st.session_state.x
 y_vals = st.session_state.y
 n = len(x_vals)
 
+# --- LIVE STATISTICAL CALCULATIONS ---
+st.subheader("⚡ Live Calculations")
+
+if n >= 2:
+    # Population metrics calculation (ddof=0)
+    cov_xy = float(np.cov(x_vals, y_vals, ddof=0)[0, 1])
+    sigma_x = float(np.std(x_vals, ddof=0))
+    sigma_y = float(np.std(y_vals, ddof=0))
+    
+    # Compute Pearson's r
+    if sigma_x > 0 and sigma_y > 0:
+        r_calc = cov_xy / (sigma_x * sigma_y)
+    else:
+        r_calc = 0.0
+
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("1. Covariance: Cov(X, Y)", f"{cov_xy:.4f}")
+    m2.metric("2. Std Dev X: σ_X", f"{sigma_x:.4f}")
+    m3.metric("3. Std Dev Y: σ_Y", f"{sigma_y:.4f}")
+    m4.metric("4. Correlation (r)", f"{r_calc:.4f}")
+    
+    st.latex(r"r = \frac{\text{Cov}(X, Y)}{\sigma_X \cdot \sigma_Y}")
+
+else:
+    st.info("Add at least 2 points to calculate covariance, standard deviations, and correlation coefficient.")
+
+st.markdown("---")
+
+# --- PLOTS ---
 plot_col1, plot_col2 = st.columns(2)
 
 with plot_col1:
