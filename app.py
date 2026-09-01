@@ -67,7 +67,7 @@ st.markdown("""
         border-color: #CBD5E1;
     }
     </style>
-""", unsafe_allow_dict=True)
+""", unsafe_allow_html=True)
 
 st.title("📊 Interactive Correlation & Deviation Analyzer")
 
@@ -154,7 +154,7 @@ else:
 
 st.markdown("---")
 
-# --- MAIN PANEL: High Contrast Visualizations ---
+# --- MAIN PANEL: Visualizations ---
 plot_col1, plot_col2 = st.columns(2)
 
 with plot_col1:
@@ -166,22 +166,22 @@ with plot_col1:
 
         # Deviation lines (Bold Colors with high opacity)
         for i in range(n):
-            # Horizontal red line (X deviation: dx)
+            # Horizontal red line (X deviation)
             fig1.add_trace(go.Scatter(
                 x=[x_vals[i], mx], y=[y_vals[i], y_vals[i]],
                 mode='lines',
-                line=dict(color='#E11D48', dash='dash', width=2),  # Vivid Crimson Red
+                line=dict(color='#E11D48', dash='dash', width=2),
                 showlegend=False, hoverinfo='skip'
             ))
-            # Vertical blue line (Y deviation: dy)
+            # Vertical blue line (Y deviation)
             fig1.add_trace(go.Scatter(
                 x=[x_vals[i], x_vals[i]], y=[y_vals[i], my],
                 mode='lines',
-                line=dict(color='#2563EB', dash='dash', width=2),  # Vivid Royal Blue
+                line=dict(color='#2563EB', dash='dash', width=2),
                 showlegend=False, hoverinfo='skip'
             ))
 
-        # High-visibility Mean Reference Crosshairs
+        # Mean Reference Crosshairs
         fig1.add_vline(x=mx, line_dash="dash", line_color="#0F172A", line_width=2,
                        annotation_text=f"Mean X: {mx:.2f}", annotation_position="top left",
                        annotation_font=dict(size=12, color="#0F172A"))
@@ -190,7 +190,7 @@ with plot_col1:
                        annotation_text=f"Mean Y: {my:.2f}", annotation_position="bottom right",
                        annotation_font=dict(size=12, color="#0F172A"))
 
-        # Primary Scatter Points
+        # Scatter Points
         fig1.add_trace(go.Scatter(
             x=x_vals, y=y_vals,
             mode='markers+text',
@@ -201,7 +201,6 @@ with plot_col1:
             name="Points"
         ))
 
-    # Darker background grid for optimal contrast
     fig1.update_layout(
         plot_bgcolor='#FFFFFF',
         paper_bgcolor='#FFFFFF',
