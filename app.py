@@ -33,23 +33,34 @@ st.markdown("""
         font-size: 1.25rem !important;
     }
 
-    /* Metric Cards Styling */
-    div[data-testid="stMetric"] {
-        background-color: #FFFFFF;
-        border: 1px solid #E2E8F0;
+    /* Custom Metric Card Containers */
+    .metric-card {
+        background-color: #0F172A;
+        border: 2px solid #334155;
         border-radius: 10px;
-        padding: 12px 16px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        padding: 14px 18px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        margin-bottom: 10px;
     }
-    div[data-testid="stMetricLabel"] {
-        color: #64748B !important;
-        font-size: 0.85rem !important;
+    .metric-title {
+        color: #94A3B8;
+        font-size: 0.85rem;
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
     }
-    div[data-testid="stMetricValue"] {
-        color: #0F172A !important;
-        font-size: 1.6rem !important;
+    .metric-symbol {
+        font-size: 1.15rem;
         font-weight: 700;
+        margin-bottom: 6px;
+    }
+    .metric-value {
+        color: #FFFFFF;
+        font-size: 1.8rem;
+        font-weight: 800;
+        font-family: 'Courier New', Courier, monospace;
     }
 
     /* Data Editor / Sidebar Tweaks */
@@ -142,10 +153,42 @@ if n >= 2:
     r_calc = (cov_xy / (sigma_x * sigma_y)) if (sigma_x > 0 and sigma_y > 0) else 0.0
 
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("1. Covariance: Cov(X,Y)", f"{cov_xy:.4f}")
-    m2.metric("2. Std Dev: σ_X", f"{sigma_x:.4f}")
-    m3.metric("3. Std Dev: σ_Y", f"{sigma_y:.4f}")
-    m4.metric("4. Pearson Correlation (r)", f"{r_calc:.4f}")
+    
+    with m1:
+        st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-title">1. Covariance</div>
+                <div class="metric-symbol" style="color: #38BDF8;">Cov(X, Y)</div>
+                <div class="metric-value">{cov_xy:.4f}</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    with m2:
+        st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-title">2. Std Dev X</div>
+                <div class="metric-symbol" style="color: #F43F5E;">σ<sub>X</sub></div>
+                <div class="metric-value">{sigma_x:.4f}</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    with m3:
+        st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-title">3. Std Dev Y</div>
+                <div class="metric-symbol" style="color: #60A5FA;">σ<sub>Y</sub></div>
+                <div class="metric-value">{sigma_y:.4f}</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    with m4:
+        st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-title">4. Pearson Correlation</div>
+                <div class="metric-symbol" style="color: #4ADE80;">r</div>
+                <div class="metric-value">{r_calc:.4f}</div>
+            </div>
+        """, unsafe_allow_html=True)
     
     st.latex(r"r = \frac{\text{Cov}(X, Y)}{\sigma_X \cdot \sigma_Y}")
 
