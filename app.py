@@ -88,6 +88,11 @@ if "x" not in st.session_state:
 if "y" not in st.session_state:
     st.session_state.y = [3.0, 5.0, 7.0, 8.0, 11.0]
 
+# --- SAFEGUARD: Ensure X and Y lists are strictly of equal length ---
+min_len = min(len(st.session_state.x), len(st.session_state.y))
+st.session_state.x = st.session_state.x[:min_len]
+st.session_state.y = st.session_state.y[:min_len]
+
 # Helper function to compute correlations sequentially
 def compute_correlations(x_vals, y_vals):
     pearsons, spearmans = [], []
@@ -131,10 +136,14 @@ edited_df = st.sidebar.data_editor(
     use_container_width=True
 )
 
-# Sync table modifications back to state
-if not edited_df.equals(df_current):
-    st.session_state.x = edited_df["X"].dropna().tolist()
-    st.session_state.y = edited_df["Y"].dropna().tolist()
+# --- SAFEGUARD: Synchronize table changes while filtering out incomplete rows ---
+cleaned_df = edited_df.dropna(subset=["X", "Y"])
+new_x_list = cleaned_df["X"].astype(float).tolist()
+new_y_list = cleaned_df["Y"].astype(float).tolist()
+
+if new_x_list != st.session_state.x or new_y_list != st.session_state.y:
+    st.session_state.x = new_x_list
+    st.session_state.y = new_y_list
     st.rerun()
 
 # --- SIDEBAR: Export Options ---
@@ -152,7 +161,7 @@ if n >= 2:
     r_calc = (cov_xy / (sigma_x * sigma_y)) if (sigma_x > 0 and sigma_y > 0) else 0.0
 
     # Build Export DataFrame
-    export_df = df_current.copy()
+    export_df = pd.DataFrame({"X": x_vals, "Y": y_vals})
     export_df["Covariance_XY"] = cov_xy
     export_df["StdDev_X"] = sigma_x
     export_df["StdDev_Y"] = sigma_y
