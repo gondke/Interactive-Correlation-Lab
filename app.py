@@ -417,8 +417,11 @@ with tab2:
         }
         df_spearman_display = pd.concat([df_spearman, pd.DataFrame([totals_spearman], index=["Total (Σ)"])])
 
+        # FIX (UPDATE 1): Ensure D^2 values appear with high contrast text over soft pink background
         st.dataframe(
-            df_spearman_display.style.format("{:.4f}").highlight_max(subset=["D²"], color="#FFE2E2"),
+            df_spearman_display.style.format("{:.4f}").applymap(
+                lambda val: 'background-color: #FFE4E6; color: #9F1239; font-weight: bold;', subset=["D²"]
+            ),
             use_container_width=True
         )
 
@@ -497,9 +500,35 @@ with tab3:
 
         st.markdown("---")
 
+        # UPDATE 2: Interactive Value Estimator Inputs
+        st.subheader("🎯 Interactive Value Prediction & Perpendicular Projection")
+        pred_col1, pred_col2 = st.columns(2)
+
+        with pred_col1:
+            given_x = st.number_input(
+                "Predict Y from known X (Line Y on X)", 
+                value=float(np.round(mx, 2)), 
+                step=0.5, 
+                key="input_x_pred"
+            )
+            calc_y_pred = a_yx + b_yx * given_x
+            st.success(f"📌 Predicted **Y** for X = `{given_x:.2f}`: **`{calc_y_pred:.4f}`**")
+
+        with pred_col2:
+            given_y = st.number_input(
+                "Predict X from known Y (Line X on Y)", 
+                value=float(np.round(my, 2)), 
+                step=0.5, 
+                key="input_y_pred"
+            )
+            calc_x_pred = a_xy + b_xy * given_y
+            st.info(f"📌 Predicted **X** for Y = `{given_y:.2f}`: **`{calc_x_pred:.4f}`**")
+
+        st.markdown("---")
+
         # Range setup for continuous line rendering
-        x_min, x_max = min(x_vals) - 2, max(x_vals) + 2
-        y_min, y_max = min(y_vals) - 2, max(y_vals) + 2
+        x_min, x_max = min(x_vals + [given_x, calc_x_pred]) - 2, max(x_vals + [given_x, calc_x_pred]) + 2
+        y_min, y_max = min(y_vals + [given_y, calc_y_pred]) - 2, max(y_vals + [given_y, calc_y_pred]) + 2
 
         x_range = np.linspace(x_min, x_max, 100)
         y_range = np.linspace(y_min, y_max, 100)
@@ -527,11 +556,34 @@ with tab3:
                 name="Data Points"
             ))
 
+            # UPDATE 2: Add Perpendicular Lines for Y on X Prediction
+            fig_reg1.add_trace(go.Scatter(
+                x=[given_x, given_x], y=[0, calc_y_pred],
+                mode='lines',
+                line=dict(color='#059669', width=2.5, dash='dash'),
+                name=f"X = {given_x:.2f}"
+            ))
+            fig_reg1.add_trace(go.Scatter(
+                x=[0, given_x], y=[calc_y_pred, calc_y_pred],
+                mode='lines',
+                line=dict(color='#059669', width=2.5, dash='dash'),
+                name=f"Y = {calc_y_pred:.2f}"
+            ))
+            # Marker on point
+            fig_reg1.add_trace(go.Scatter(
+                x=[given_x], y=[calc_y_pred],
+                mode='markers+text',
+                text=[f"({given_x:.2f}, {calc_y_pred:.2f})"],
+                textposition="top left",
+                marker=dict(size=14, color='#059669', symbol='star'),
+                name="Prediction Point"
+            ))
+
             fig_reg1.update_layout(
                 plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF',
-                xaxis=dict(title="X Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5),
-                yaxis=dict(title="Y Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5),
-                height=460, margin=dict(l=40, r=40, t=30, b=40),
+                xaxis=dict(title="X Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, range=[x_min, x_max]),
+                yaxis=dict(title="Y Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, range=[y_min, y_max]),
+                height=480, margin=dict(l=40, r=40, t=30, b=40),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
             st.plotly_chart(fig_reg1, use_container_width=True)
@@ -557,11 +609,34 @@ with tab3:
                 name="Data Points"
             ))
 
+            # UPDATE 2: Add Perpendicular Lines for X on Y Prediction
+            fig_reg2.add_trace(go.Scatter(
+                x=[0, calc_x_pred], y=[given_y, given_y],
+                mode='lines',
+                line=dict(color='#D97706', width=2.5, dash='dash'),
+                name=f"Y = {given_y:.2f}"
+            ))
+            fig_reg2.add_trace(go.Scatter(
+                x=[calc_x_pred, calc_x_pred], y=[0, given_y],
+                mode='lines',
+                line=dict(color='#D97706', width=2.5, dash='dash'),
+                name=f"X = {calc_x_pred:.2f}"
+            ))
+            # Marker on point
+            fig_reg2.add_trace(go.Scatter(
+                x=[calc_x_pred], y=[given_y],
+                mode='markers+text',
+                text=[f"({calc_x_pred:.2f}, {given_y:.2f})"],
+                textposition="top left",
+                marker=dict(size=14, color='#D97706', symbol='star'),
+                name="Prediction Point"
+            ))
+
             fig_reg2.update_layout(
                 plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF',
-                xaxis=dict(title="X Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5),
-                yaxis=dict(title="Y Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5),
-                height=460, margin=dict(l=40, r=40, t=30, b=40),
+                xaxis=dict(title="X Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, range=[x_min, x_max]),
+                yaxis=dict(title="Y Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, range=[y_min, y_max]),
+                height=480, margin=dict(l=40, r=40, t=30, b=40),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
             st.plotly_chart(fig_reg2, use_container_width=True)
