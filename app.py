@@ -357,8 +357,14 @@ with tab2:
         }
         df_pearson_display = pd.concat([df_pearson, pd.DataFrame([totals_pearson], index=["Total (Σ)"])])
 
+        # Style Pearson Table: Dark slate background for Total Row to remove white background appearance
+        def highlight_total_row(row):
+            if row.name == "Total (Σ)":
+                return ['background-color: #F1F5F9; color: #0F172A; font-weight: bold; border-top: 2px solid #94A3B8;'] * len(row)
+            return [''] * len(row)
+
         st.dataframe(
-            df_pearson_display.style.format("{:.4f}").highlight_max(subset=["xy", "x²", "y²"], color="#D2E8FF"),
+            df_pearson_display.style.format("{:.4f}").apply(highlight_total_row, axis=1),
             use_container_width=True
         )
 
@@ -417,11 +423,18 @@ with tab2:
         }
         df_spearman_display = pd.concat([df_spearman, pd.DataFrame([totals_spearman], index=["Total (Σ)"])])
 
-        # FIX: Replaced deprecated .applymap() with .map() for modern Pandas compatibility
+        # Style Spearman Table: Custom grey background for D² column & styled Total row
+        def style_spearman_table(df):
+            styles = pd.DataFrame('', index=df.index, columns=df.columns)
+            # Apply styling to last column D²
+            styles['D²'] = 'background-color: #E2E8F0; color: #0F172A; font-weight: bold;'
+            # Apply styling to Total Row
+            if "Total (Σ)" in df.index:
+                styles.loc["Total (Σ)"] = 'background-color: #F1F5F9; color: #0F172A; font-weight: bold; border-top: 2px solid #94A3B8;'
+            return styles
+
         st.dataframe(
-            df_spearman_display.style.format("{:.4f}").map(
-                lambda val: 'background-color: #FFE4E6; color: #9F1239; font-weight: bold;', subset=["D²"]
-            ),
+            df_spearman_display.style.format("{:.4f}").apply(style_spearman_table, axis=None),
             use_container_width=True
         )
 
@@ -500,14 +513,14 @@ with tab3:
 
         st.markdown("---")
 
-        # Interactive Value Estimator Inputs
+        # Interactive Value Estimator Inputs (Prefilled to zero)
         st.subheader("🎯 Interactive Value Prediction & Perpendicular Projection")
         pred_col1, pred_col2 = st.columns(2)
 
         with pred_col1:
             given_x = st.number_input(
                 "Predict Y from known X (Line Y on X)", 
-                value=float(np.round(mx, 2)), 
+                value=0.0, 
                 step=0.5, 
                 key="input_x_pred"
             )
@@ -517,7 +530,7 @@ with tab3:
         with pred_col2:
             given_y = st.number_input(
                 "Predict X from known Y (Line X on Y)", 
-                value=float(np.round(my, 2)), 
+                value=0.0, 
                 step=0.5, 
                 key="input_y_pred"
             )
