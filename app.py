@@ -417,9 +417,9 @@ with tab2:
         }
         df_spearman_display = pd.concat([df_spearman, pd.DataFrame([totals_spearman], index=["Total (Σ)"])])
 
-        # FIX (UPDATE 1): Ensure D^2 values appear with high contrast text over soft pink background
+        # FIX: Replaced deprecated .applymap() with .map() for modern Pandas compatibility
         st.dataframe(
-            df_spearman_display.style.format("{:.4f}").applymap(
+            df_spearman_display.style.format("{:.4f}").map(
                 lambda val: 'background-color: #FFE4E6; color: #9F1239; font-weight: bold;', subset=["D²"]
             ),
             use_container_width=True
@@ -500,7 +500,7 @@ with tab3:
 
         st.markdown("---")
 
-        # UPDATE 2: Interactive Value Estimator Inputs
+        # Interactive Value Estimator Inputs
         st.subheader("🎯 Interactive Value Prediction & Perpendicular Projection")
         pred_col1, pred_col2 = st.columns(2)
 
@@ -556,7 +556,7 @@ with tab3:
                 name="Data Points"
             ))
 
-            # UPDATE 2: Add Perpendicular Lines for Y on X Prediction
+            # Perpendicular Lines for Y on X Prediction
             fig_reg1.add_trace(go.Scatter(
                 x=[given_x, given_x], y=[0, calc_y_pred],
                 mode='lines',
@@ -609,7 +609,7 @@ with tab3:
                 name="Data Points"
             ))
 
-            # UPDATE 2: Add Perpendicular Lines for X on Y Prediction
+            # Perpendicular Lines for X on Y Prediction
             fig_reg2.add_trace(go.Scatter(
                 x=[0, calc_x_pred], y=[given_y, given_y],
                 mode='lines',
