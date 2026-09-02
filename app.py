@@ -24,7 +24,7 @@ st.markdown("""
     h1 {
         color: #1E293B;
         font-weight: 800;
-        font-size: 2.2rem !important;
+        font-size: 2rem !important;
         margin-bottom: 0.5rem !important;
     }
     h2, h3 {
@@ -32,32 +32,32 @@ st.markdown("""
         font-weight: 700;
     }
 
-    /* Custom Metric Card Containers */
+    /* Compact Metric Card Containers */
     .metric-card {
         background-color: #0F172A;
-        border: 2px solid #334155;
-        border-radius: 10px;
-        padding: 14px 18px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
+        border: 1.5px solid #334155;
+        border-radius: 8px;
+        padding: 8px 12px;
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
         text-align: center;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     .metric-title {
         color: #94A3B8;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
     .metric-symbol {
-        font-size: 1.15rem;
+        font-size: 0.95rem;
         font-weight: 700;
-        margin-bottom: 6px;
+        margin-bottom: 2px;
     }
     .metric-value {
         color: #FFFFFF;
-        font-size: 1.8rem;
+        font-size: 1.35rem;
         font-weight: 800;
         font-family: 'Courier New', Courier, monospace;
     }
@@ -73,7 +73,7 @@ st.markdown("""
     
     /* Custom Dividers */
     hr {
-        margin: 1.5rem 0;
+        margin: 1.2rem 0;
         border-color: #CBD5E1;
     }
     </style>
@@ -280,8 +280,18 @@ with tab1:
 
         fig1.update_layout(
             plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF',
-            xaxis=dict(showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, zeroline=True, zerolinecolor='#64748B', zerolinewidth=2, title=dict(text="X Axis", font=dict(size=14, color="#1E293B"))),
-            yaxis=dict(showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, zeroline=True, zerolinecolor='#64748B', zerolinewidth=2, title=dict(text="Y Axis", font=dict(size=14, color="#1E293B"))),
+            xaxis=dict(
+                showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5,
+                zeroline=True, zerolinecolor='#64748B', zerolinewidth=2,
+                title=dict(text="X Axis", font=dict(size=14, color="#0F172A", weight="bold")),
+                tickfont=dict(color="#0F172A", size=12, weight="bold")
+            ),
+            yaxis=dict(
+                showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5,
+                zeroline=True, zerolinecolor='#64748B', zerolinewidth=2,
+                title=dict(text="Y Axis", font=dict(size=14, color="#0F172A", weight="bold")),
+                tickfont=dict(color="#0F172A", size=12, weight="bold")
+            ),
             height=480, margin=dict(l=40, r=40, t=30, b=40), showlegend=False
         )
         st.plotly_chart(fig1, use_container_width=True)
@@ -305,8 +315,17 @@ with tab1:
 
         fig2.update_layout(
             plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF',
-            xaxis=dict(title=dict(text="Points Included in Calculation", font=dict(size=14, color="#1E293B")), showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, dtick=1),
-            yaxis=dict(title=dict(text="Correlation Coefficient Value", font=dict(size=14, color="#1E293B")), range=[-1.1, 1.1], showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, zeroline=True, zerolinecolor='#64748B', zerolinewidth=2),
+            xaxis=dict(
+                title=dict(text="Points Included in Calculation", font=dict(size=14, color="#0F172A", weight="bold")),
+                showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, dtick=1,
+                tickfont=dict(color="#0F172A", size=12, weight="bold")
+            ),
+            yaxis=dict(
+                title=dict(text="Correlation Coefficient Value", font=dict(size=14, color="#0F172A", weight="bold")),
+                range=[-1.1, 1.1], showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5,
+                zeroline=True, zerolinecolor='#64748B', zerolinewidth=2,
+                tickfont=dict(color="#0F172A", size=12, weight="bold")
+            ),
             height=480, margin=dict(l=40, r=40, t=30, b=40),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=12, color="#0F172A"), bgcolor="rgba(255,255,255,0.8)", bordercolor="#CBD5E1", borderwidth=1)
         )
@@ -345,7 +364,6 @@ with tab2:
             "y²": dev_y2
         })
 
-        # Append Total Row
         totals_pearson = {
             "X": sum(x_vals),
             "Y": sum(y_vals),
@@ -357,7 +375,6 @@ with tab2:
         }
         df_pearson_display = pd.concat([df_pearson, pd.DataFrame([totals_pearson], index=["Total (Σ)"])])
 
-        # Style Pearson Table: Dark slate background for Total Row to remove white background appearance
         def highlight_total_row(row):
             if row.name == "Total (Σ)":
                 return ['background-color: #F1F5F9; color: #0F172A; font-weight: bold; border-top: 2px solid #94A3B8;'] * len(row)
@@ -400,7 +417,6 @@ with tab2:
             "D²": diff_d2
         })
 
-        # Calculation of Tie Corrections: Correction = sum(m^3 - m) / 12
         def calc_tie_correction(ranks):
             correction = 0.0
             _, counts = np.unique(ranks, return_counts=True)
@@ -423,14 +439,12 @@ with tab2:
         }
         df_spearman_display = pd.concat([df_spearman, pd.DataFrame([totals_spearman], index=["Total (Σ)"])])
 
-        # Style Spearman Table: Custom grey background for D² column & styled Total row
+        # Style Spearman Table: Uniform Slate/Grey theme for D² column & Total row (No white backgrounds)
         def style_spearman_table(df):
             styles = pd.DataFrame('', index=df.index, columns=df.columns)
-            # Apply styling to last column D²
             styles['D²'] = 'background-color: #E2E8F0; color: #0F172A; font-weight: bold;'
-            # Apply styling to Total Row
             if "Total (Σ)" in df.index:
-                styles.loc["Total (Σ)"] = 'background-color: #F1F5F9; color: #0F172A; font-weight: bold; border-top: 2px solid #94A3B8;'
+                styles.loc["Total (Σ)"] = 'background-color: #CBD5E1; color: #0F172A; font-weight: bold; border-top: 2px solid #64748B;'
             return styles
 
         st.dataframe(
@@ -465,14 +479,14 @@ with tab3:
         cov_xy = float(np.cov(x_vals, y_vals, ddof=0)[0, 1])
 
         # Regression Coefficients
-        b_yx = (cov_xy / var_x) if var_x > 0 else 0.0  # Line Y on X
-        b_xy = (cov_xy / var_y) if var_y > 0 else 0.0  # Line X on Y
+        b_yx = (cov_xy / var_x) if var_x > 0 else 0.0
+        b_xy = (cov_xy / var_y) if var_y > 0 else 0.0
 
         # Intercepts
-        a_yx = my - (b_yx * mx)  # Y = a_yx + b_yx * X
-        a_xy = mx - (b_xy * my)  # X = a_xy + b_xy * Y
+        a_yx = my - (b_yx * mx)
+        a_xy = mx - (b_xy * my)
 
-        # Live Coefficients Metric Displays
+        # Compact Live Coefficients Metric Displays
         reg_m1, reg_m2, reg_m3, reg_m4 = st.columns(4)
 
         with reg_m1:
@@ -489,7 +503,7 @@ with tab3:
                 <div class="metric-card">
                     <div class="metric-title">Equation: Y on X</div>
                     <div class="metric-symbol" style="color: #F43F5E;">Y = a + bX</div>
-                    <div class="metric-value" style="font-size: 1.1rem; line-height: 2.2rem;">Y = {a_yx:.2f} + {b_yx:.2f}X</div>
+                    <div class="metric-value" style="font-size: 1.05rem; line-height: 1.8rem;">Y = {a_yx:.2f} + {b_yx:.2f}X</div>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -507,13 +521,96 @@ with tab3:
                 <div class="metric-card">
                     <div class="metric-title">Equation: X on Y</div>
                     <div class="metric-symbol" style="color: #0EA5E9;">X = a + bY</div>
-                    <div class="metric-value" style="font-size: 1.1rem; line-height: 2.2rem;">X = {a_xy:.2f} + {b_xy:.2f}Y</div>
+                    <div class="metric-value" style="font-size: 1.05rem; line-height: 1.8rem;">X = {a_xy:.2f} + {b_xy:.2f}Y</div>
                 </div>
             """, unsafe_allow_html=True)
 
         st.markdown("---")
 
-        # Interactive Value Estimator Inputs (Prefilled to zero)
+        # Range setup for continuous line rendering
+        x_min, x_max = min(x_vals) - 3, max(x_vals) + 3
+        y_min, y_max = min(y_vals) - 3, max(y_vals) + 3
+
+        x_range = np.linspace(x_min, x_max, 100)
+        y_range = np.linspace(y_min, y_max, 100)
+
+        reg_col1, reg_col2 = st.columns(2)
+
+        # Plot 1: Regression of Y on X
+        with reg_col1:
+            st.subheader("🔴 Regression Line of Y on X")
+            st.caption("Predicts Dependent Variable **Y** given Independent Variable **X**")
+            
+            y_pred_line = a_yx + b_yx * x_range
+
+            fig_reg1 = go.Figure()
+            fig_reg1.add_trace(go.Scatter(
+                x=x_range, y=y_pred_line, mode='lines',
+                name=f"Y = {a_yx:.2f} + {b_yx:.2f}X",
+                line=dict(color='#E11D48', width=3)
+            ))
+            fig_reg1.add_trace(go.Scatter(
+                x=x_vals, y=y_vals, mode='markers',
+                marker=dict(size=12, color='#0F172A', line=dict(width=2, color='#FFFFFF')),
+                name="Data Points"
+            ))
+
+            fig_reg1.update_layout(
+                plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF',
+                xaxis=dict(
+                    title=dict(text="X Axis", font=dict(size=14, color="#0F172A", weight="bold")),
+                    showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5,
+                    tickfont=dict(color="#0F172A", size=12, weight="bold")
+                ),
+                yaxis=dict(
+                    title=dict(text="Y Axis", font=dict(size=14, color="#0F172A", weight="bold")),
+                    showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5,
+                    tickfont=dict(color="#0F172A", size=12, weight="bold")
+                ),
+                height=460, margin=dict(l=40, r=40, t=30, b=40),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig_reg1, use_container_width=True)
+
+        # Plot 2: Regression of X on Y
+        with reg_col2:
+            st.subheader("🔵 Regression Line of X on Y")
+            st.caption("Predicts Dependent Variable **X** given Independent Variable **Y**")
+            
+            x_pred_line = a_xy + b_xy * y_range
+
+            fig_reg2 = go.Figure()
+            fig_reg2.add_trace(go.Scatter(
+                x=x_pred_line, y=y_range, mode='lines',
+                name=f"X = {a_xy:.2f} + {b_xy:.2f}Y",
+                line=dict(color='#0284C7', width=3)
+            ))
+            fig_reg2.add_trace(go.Scatter(
+                x=x_vals, y=y_vals, mode='markers',
+                marker=dict(size=12, color='#0F172A', line=dict(width=2, color='#FFFFFF')),
+                name="Data Points"
+            ))
+
+            fig_reg2.update_layout(
+                plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF',
+                xaxis=dict(
+                    title=dict(text="X Axis", font=dict(size=14, color="#0F172A", weight="bold")),
+                    showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5,
+                    tickfont=dict(color="#0F172A", size=12, weight="bold")
+                ),
+                yaxis=dict(
+                    title=dict(text="Y Axis", font=dict(size=14, color="#0F172A", weight="bold")),
+                    showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5,
+                    tickfont=dict(color="#0F172A", size=12, weight="bold")
+                ),
+                height=460, margin=dict(l=40, r=40, t=30, b=40),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig_reg2, use_container_width=True)
+
+        st.markdown("---")
+
+        # SECTION MOVED UNDERNEATH GRAPHS: Interactive Value Prediction & Perpendicular Projection
         st.subheader("🎯 Interactive Value Prediction & Perpendicular Projection")
         pred_col1, pred_col2 = st.columns(2)
 
@@ -536,120 +633,3 @@ with tab3:
             )
             calc_x_pred = a_xy + b_xy * given_y
             st.info(f"📌 Predicted **X** for Y = `{given_y:.2f}`: **`{calc_x_pred:.4f}`**")
-
-        st.markdown("---")
-
-        # Range setup for continuous line rendering
-        x_min, x_max = min(x_vals + [given_x, calc_x_pred]) - 2, max(x_vals + [given_x, calc_x_pred]) + 2
-        y_min, y_max = min(y_vals + [given_y, calc_y_pred]) - 2, max(y_vals + [given_y, calc_y_pred]) + 2
-
-        x_range = np.linspace(x_min, x_max, 100)
-        y_range = np.linspace(y_min, y_max, 100)
-
-        reg_col1, reg_col2 = st.columns(2)
-
-        # Plot 1: Regression of Y on X
-        with reg_col1:
-            st.subheader("🔴 Regression Line of Y on X")
-            st.caption("Predicts Dependent Variable **Y** given Independent Variable **X**")
-            
-            y_pred_line = a_yx + b_yx * x_range
-
-            fig_reg1 = go.Figure()
-            # Fitted Line
-            fig_reg1.add_trace(go.Scatter(
-                x=x_range, y=y_pred_line, mode='lines',
-                name=f"Y = {a_yx:.2f} + {b_yx:.2f}X",
-                line=dict(color='#E11D48', width=3)
-            ))
-            # Data Points
-            fig_reg1.add_trace(go.Scatter(
-                x=x_vals, y=y_vals, mode='markers',
-                marker=dict(size=12, color='#0F172A', line=dict(width=2, color='#FFFFFF')),
-                name="Data Points"
-            ))
-
-            # Perpendicular Lines for Y on X Prediction
-            fig_reg1.add_trace(go.Scatter(
-                x=[given_x, given_x], y=[0, calc_y_pred],
-                mode='lines',
-                line=dict(color='#059669', width=2.5, dash='dash'),
-                name=f"X = {given_x:.2f}"
-            ))
-            fig_reg1.add_trace(go.Scatter(
-                x=[0, given_x], y=[calc_y_pred, calc_y_pred],
-                mode='lines',
-                line=dict(color='#059669', width=2.5, dash='dash'),
-                name=f"Y = {calc_y_pred:.2f}"
-            ))
-            # Marker on point
-            fig_reg1.add_trace(go.Scatter(
-                x=[given_x], y=[calc_y_pred],
-                mode='markers+text',
-                text=[f"({given_x:.2f}, {calc_y_pred:.2f})"],
-                textposition="top left",
-                marker=dict(size=14, color='#059669', symbol='star'),
-                name="Prediction Point"
-            ))
-
-            fig_reg1.update_layout(
-                plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF',
-                xaxis=dict(title="X Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, range=[x_min, x_max]),
-                yaxis=dict(title="Y Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, range=[y_min, y_max]),
-                height=480, margin=dict(l=40, r=40, t=30, b=40),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-            )
-            st.plotly_chart(fig_reg1, use_container_width=True)
-
-        # Plot 2: Regression of X on Y
-        with reg_col2:
-            st.subheader("🔵 Regression Line of X on Y")
-            st.caption("Predicts Dependent Variable **X** given Independent Variable **Y**")
-            
-            x_pred_line = a_xy + b_xy * y_range
-
-            fig_reg2 = go.Figure()
-            # Fitted Line
-            fig_reg2.add_trace(go.Scatter(
-                x=x_pred_line, y=y_range, mode='lines',
-                name=f"X = {a_xy:.2f} + {b_xy:.2f}Y",
-                line=dict(color='#0284C7', width=3)
-            ))
-            # Data Points
-            fig_reg2.add_trace(go.Scatter(
-                x=x_vals, y=y_vals, mode='markers',
-                marker=dict(size=12, color='#0F172A', line=dict(width=2, color='#FFFFFF')),
-                name="Data Points"
-            ))
-
-            # Perpendicular Lines for X on Y Prediction
-            fig_reg2.add_trace(go.Scatter(
-                x=[0, calc_x_pred], y=[given_y, given_y],
-                mode='lines',
-                line=dict(color='#D97706', width=2.5, dash='dash'),
-                name=f"Y = {given_y:.2f}"
-            ))
-            fig_reg2.add_trace(go.Scatter(
-                x=[calc_x_pred, calc_x_pred], y=[0, given_y],
-                mode='lines',
-                line=dict(color='#D97706', width=2.5, dash='dash'),
-                name=f"X = {calc_x_pred:.2f}"
-            ))
-            # Marker on point
-            fig_reg2.add_trace(go.Scatter(
-                x=[calc_x_pred], y=[given_y],
-                mode='markers+text',
-                text=[f"({calc_x_pred:.2f}, {given_y:.2f})"],
-                textposition="top left",
-                marker=dict(size=14, color='#D97706', symbol='star'),
-                name="Prediction Point"
-            ))
-
-            fig_reg2.update_layout(
-                plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF',
-                xaxis=dict(title="X Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, range=[x_min, x_max]),
-                yaxis=dict(title="Y Axis", showgrid=True, gridcolor='#CBD5E1', gridwidth=1.5, range=[y_min, y_max]),
-                height=480, margin=dict(l=40, r=40, t=30, b=40),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-            )
-            st.plotly_chart(fig_reg2, use_container_width=True)
