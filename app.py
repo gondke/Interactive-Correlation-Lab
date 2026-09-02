@@ -137,21 +137,44 @@ if not edited_df.equals(df_current):
     st.session_state.y = edited_df["Y"].dropna().tolist()
     st.rerun()
 
+# --- SIDEBAR: Export Options ---
+st.sidebar.markdown("---")
+st.sidebar.subheader("📥 Export Options")
 
-# --- MAIN PANEL: Live Metrics ---
 x_vals = st.session_state.x
 y_vals = st.session_state.y
 n = len(x_vals)
-
-st.subheader("⚡ Live Calculations")
 
 if n >= 2:
     cov_xy = float(np.cov(x_vals, y_vals, ddof=0)[0, 1])
     sigma_x = float(np.std(x_vals, ddof=0))
     sigma_y = float(np.std(y_vals, ddof=0))
-    
     r_calc = (cov_xy / (sigma_x * sigma_y)) if (sigma_x > 0 and sigma_y > 0) else 0.0
 
+    # Build Export DataFrame
+    export_df = df_current.copy()
+    export_df["Covariance_XY"] = cov_xy
+    export_df["StdDev_X"] = sigma_x
+    export_df["StdDev_Y"] = sigma_y
+    export_df["Pearson_r"] = r_calc
+
+    csv_data = export_df.to_csv(index=False).encode('utf-8')
+
+    st.sidebar.download_button(
+        label="📄 Download Data & Metrics (CSV)",
+        data=csv_data,
+        file_name="correlation_analysis_data.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
+else:
+    st.sidebar.info("Add at least 2 points to enable CSV export.")
+
+
+# --- MAIN PANEL: Live Metrics ---
+st.subheader("⚡ Live Calculations")
+
+if n >= 2:
     m1, m2, m3, m4 = st.columns(4)
     
     with m1:
@@ -207,16 +230,14 @@ with plot_col1:
     if n > 0:
         mx, my = float(np.mean(x_vals)), float(np.mean(y_vals))
 
-        # Deviation lines (Bold Colors with high opacity)
+        # Deviation lines
         for i in range(n):
-            # Horizontal red line (X deviation)
             fig1.add_trace(go.Scatter(
                 x=[x_vals[i], mx], y=[y_vals[i], y_vals[i]],
                 mode='lines',
                 line=dict(color='#E11D48', dash='dash', width=2),
                 showlegend=False, hoverinfo='skip'
             ))
-            # Vertical blue line (Y deviation)
             fig1.add_trace(go.Scatter(
                 x=[x_vals[i], x_vals[i]], y=[y_vals[i], my],
                 mode='lines',
